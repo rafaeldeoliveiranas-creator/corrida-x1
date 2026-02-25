@@ -1,1 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Corrida X1</title>
+<style>
+body{
+    margin:0;
+    overflow:hidden;
+    background:black;
+}
+canvas{
+    display:block;
+}
+</style>
+</head>
 
+<body>
+<canvas id="game"></canvas>
+
+<script>
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+// --- CARREGAR CARRO ---
+const car = new Image();
+car.src = "img/car-green.png";
+
+// posição inicial
+let carX = canvas.width / 2;
+let carY = canvas.height - 200;
+
+// destino do toque
+let targetX = carX;
+
+// --- CONTROLE PELO DEDO ---
+canvas.addEventListener("touchmove", (e)=>{
+    const touch = e.touches[0];
+    targetX = touch.clientX;
+});
+
+// também funciona no PC
+canvas.addEventListener("mousemove", (e)=>{
+    targetX = e.clientX;
+});
+
+// --- LOOP DO JOGO ---
+function gameLoop(){
+
+    // fundo
+    ctx.fillStyle = "black";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    // estrada
+    ctx.fillStyle = "#2b2b2b";
+    ctx.fillRect(canvas.width*0.25,0,canvas.width*0.5,canvas.height);
+
+    // mover suavemente pro dedo
+    carX += (targetX - carX) * 0.08;
+
+    // desenhar carro
+    ctx.drawImage(car, carX-40, carY-80, 80,160);
+
+    requestAnimationFrame(gameLoop);
+}
+
+car.onload = ()=>{
+    gameLoop();
+};
+</script>
+
+</body>
+</html>
