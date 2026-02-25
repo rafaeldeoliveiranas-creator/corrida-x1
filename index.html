@@ -26,24 +26,23 @@ const ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-// --- CARREGAR CARRO ---
+// --- CARRO ---
 const car = new Image();
 car.src = "img/car-green.png";
-
-// posição inicial
 let carX = canvas.width / 2;
 let carY = canvas.height - 200;
-
-// destino do toque
 let targetX = carX;
 
-// --- CONTROLE PELO DEDO ---
-canvas.addEventListener("touchmove", (e)=>{
-    const touch = e.touches[0];
-    targetX = touch.clientX;
-});
+// --- PISTA ---
+const roadImg = new Image();
+roadImg.src = "img/pista.png";
+let offsetY = 0;
+const velocidade = 4;
 
-// também funciona no PC
+// --- CONTROLE HORIZONTAL ---
+canvas.addEventListener("touchmove", (e)=>{
+    targetX = e.touches[0].clientX;
+});
 canvas.addEventListener("mousemove", (e)=>{
     targetX = e.clientX;
 });
@@ -51,15 +50,19 @@ canvas.addEventListener("mousemove", (e)=>{
 // --- LOOP DO JOGO ---
 function gameLoop(){
 
-    // fundo
+    // fundo preto
     ctx.fillStyle = "black";
     ctx.fillRect(0,0,canvas.width,canvas.height);
 
-    // estrada
-    ctx.fillStyle = "#2b2b2b";
-    ctx.fillRect(canvas.width*0.25,0,canvas.width*0.5,canvas.height);
+    // mover pista
+    offsetY += velocidade;
+    if(offsetY > canvas.height) offsetY = 0;
 
-    // mover suavemente pro dedo
+    // desenhar pista duas vezes para loop contínuo
+    ctx.drawImage(roadImg, 0, offsetY - canvas.height, canvas.width, canvas.height);
+    ctx.drawImage(roadImg, 0, offsetY, canvas.width, canvas.height);
+
+    // mover carro horizontal suavemente
     carX += (targetX - carX) * 0.08;
 
     // desenhar carro
@@ -68,6 +71,7 @@ function gameLoop(){
     requestAnimationFrame(gameLoop);
 }
 
+// iniciar loop quando a imagem do carro carregar
 car.onload = ()=>{
     gameLoop();
 };
